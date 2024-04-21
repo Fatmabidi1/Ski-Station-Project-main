@@ -7,8 +7,28 @@ pipeline {
                 echo 'pulling ...';
                 git branch: 'master',
                 url: 'https://github.com/Fatmabidi1/Ski-Station-Project-main.git'
-              
             }
         }
+stage('Build') {
+            steps {
+                
+                    sh 'mvn clean package'
+                
+            }
+        }
+stage('sonarqube test') {
+            steps {
+               withSonarQubeEnv('sonar') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+         stage("Quality gate") {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+
+      
     }
 }

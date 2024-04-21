@@ -25,7 +25,9 @@ stage('Build') {
 stage('sonarqube test') {
             steps {
                withSonarQubeEnv('sonar') {
+                    withMaven(maven: 'maven'){
                     sh 'mvn sonar:sonar'
+                   }
                 }
             }
         }

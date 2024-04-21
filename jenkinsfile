@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout GIT') {
+            steps {
+                echo 'pulling ...';
+                git branch: 'master',
+                url: 'https://github.com/Fatmabidi1/Ski-Station-Project-main.git'
+              
+            }
+        }
+    }
+}

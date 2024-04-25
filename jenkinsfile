@@ -15,6 +15,7 @@ label 'agent1'
         NEXUS_PORT = '8081'
         NEXUS_GRP_REPO = 'ski_group'
         NEXUS_LOGIN = 'nexus'
+        DOCKERHUB_LOGIN = credaentials('ski-dockerhub')
         
     }
     stages {
@@ -69,6 +70,23 @@ stage ("Upload Artifact") {
                      type: 'jar']
                   ]
                 )
+            }
+        }
+stage("Build Docker image") {
+            steps {
+                sh "docker build -t fabidi1/ski_api:latest ."
+            }
+        }
+         
+stage('Login') {
+            steps {
+                sh 'echo $DOCKERHUB_LOGIN_PSW | docker login -u $DOCKERHUB_LOGIN_USR --password-stdin'
+            }
+        }
+ stage('Push in dockerhub') {
+            steps {
+               
+                sh "docker push fabidi1/ski_api"
             }
         }
 

@@ -15,7 +15,7 @@ label 'agent1'
         NEXUS_PORT = '8081'
         NEXUS_GRP_REPO = 'ski_group'
         NEXUS_LOGIN = 'nexus'
-        DOCKERHUB_LOGIN = credaentials('ski-dockerhub')
+        DOCKERHUB_LOGIN = credentials('ski-dockerhub')
         
     }
     stages {

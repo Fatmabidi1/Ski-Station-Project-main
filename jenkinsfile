@@ -36,9 +36,10 @@ label 'agent1'
         }
 stage('Maven tests') {
             steps {
-                script {
-                    sh 'mvn clean test'
-                }
+               withMaven(maven: 'maven'){
+             sh 'mvn clean test'
+             
+        }
             }
         }
 stage('Build') {

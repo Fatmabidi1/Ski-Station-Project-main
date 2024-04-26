@@ -72,17 +72,18 @@ stage ("Upload Artifact") {
                 )
             }
         }
-stage("Build Docker image") {
-            steps {
-                sh "docker build -t fabidi1/ski:latest ."
-            }
-        }
-         
 stage('Login') {
             steps {
                 sh 'echo $DOCKERHUB_LOGIN_PSW | docker login -u $DOCKERHUB_LOGIN_USR --password-stdin'
             }
         }
+stage("Build Docker image") {
+            steps {
+                sh "docker build -t fabidi1/ski ."
+            }
+        }
+         
+
  stage('Push in dockerhub') {
             steps {
                

@@ -26,14 +26,6 @@ label 'agent1'
         DOCKERHUB_LOGIN_PSW = 'FABIDI2000'
         
     }
-    stages {
-        stage('Checkout GIT') {
-            steps {
-                echo 'pulling ...';
-                git branch: 'master',
-                url: 'https://github.com/Fatmabidi1/Ski-Station-Project-main.git'
-            }
-        }
 stage('Maven tests') {
             steps {
                withMaven(maven: 'maven'){

@@ -26,6 +26,7 @@ label 'agent1'
         DOCKERHUB_LOGIN_PSW = 'FABIDI2000'
         
     }
+stages {
 stage('Maven tests') {
             steps {
                withMaven(maven: 'maven'){

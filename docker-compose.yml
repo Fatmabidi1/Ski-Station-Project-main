@@ -6,3 +6,5 @@ services:
     ports:
       - '9092:9092'
     image: fabidi1/ski:latest
+    networks:
+      - mysql-ski

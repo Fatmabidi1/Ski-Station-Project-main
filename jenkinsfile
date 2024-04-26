@@ -34,6 +34,13 @@ label 'agent1'
                 url: 'https://github.com/Fatmabidi1/Ski-Station-Project-main.git'
             }
         }
+stage('Maven tests') {
+            steps {
+                script {
+                    sh 'mvn clean test'
+                }
+            }
+        }
 stage('Build') {
             steps {
                     withMaven(maven: 'maven'){

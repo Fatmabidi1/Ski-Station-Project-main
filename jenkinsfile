@@ -74,7 +74,7 @@ stage ("Upload Artifact") {
         }
 stage("Build Docker image") {
             steps {
-                sh "docker build -t fabidi1/ski_apii:latest ."
+                sh "docker build -t fabidi1/ski_api:latest ."
             }
         }
          
@@ -86,7 +86,7 @@ stage('Login') {
  stage('Push in dockerhub') {
             steps {
                
-                sh "docker push fabidi1/ski_apii"
+                sh "docker push fabidi1/ski_api"
             }
         }
 

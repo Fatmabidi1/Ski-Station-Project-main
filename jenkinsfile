@@ -4,6 +4,13 @@ node {
 label 'agent1'
 }
 }
+ parameters {
+        string(
+            name: 'email', 
+            defaultValue: 'fatma.abidi@esprit.tn', 
+            description: 'Email address to send notification' )
+    }
+
     environment {
         SNAP_REPO = 'ski_snapshot'
         BRANCH_NAME= 'master'
@@ -93,5 +100,24 @@ stage("Build Docker image") {
         }
 
       
+    }
+
+post {
+            failure {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
+                )
+            }
+            success {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
+                )
+            }
     }
 }

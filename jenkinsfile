@@ -106,6 +106,12 @@ stage("Build Docker image") {
                 sh "docker push fabidi1/ski"
             }
         }
+stage('Running docker compose') {
+            steps {
+               
+                sh "docker compose up -d"
+            }
+        }
 
       
     }

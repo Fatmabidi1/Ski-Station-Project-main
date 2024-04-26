@@ -1,0 +1,131 @@
+pipeline {
+    agent {
+node {
+label 'agent1'
+}
+}
+ parameters {
+        string(
+            name: 'email', 
+            defaultValue: 'fatma.abidi@esprit.tn', 
+            description: 'Email address to send notification' )
+    }
+
+    environment {
+        SNAP_REPO = 'ski_snapshot'
+        BRANCH_NAME= 'master'
+        NEXUS_USER = 'admin'
+        NEXUS_PASS = 'admin'
+        RELEASE_REPO = 'ski_release'
+        CENTRAL_REPO = 'ski_proxy'
+        NEXUS_IP = '172.20.194.101'
+        NEXUS_PORT = '8081'
+        NEXUS_GRP_REPO = 'ski_group'
+        NEXUS_LOGIN = 'nexus'
+        DOCKERHUB_LOGIN_USR = 'fabidi1'
+        DOCKERHUB_LOGIN_PSW = 'FABIDI2000'
+        
+    }
+    stages {
+        stage('Checkout GIT') {
+            steps {
+                echo 'pulling ...';
+                git branch: 'master',
+                url: 'https://github.com/Fatmabidi1/Ski-Station-Project-main.git'
+            }
+        }
+stage('Maven tests') {
+            steps {
+               withMaven(maven: 'maven'){
+             sh 'mvn clean test'
+             
+        }
+            }
+        }
+stage('Build') {
+            steps {
+                    withMaven(maven: 'maven'){
+             sh 'mvn clean package'
+             
+        }
+
+                
+                 
+                
+            }
+
+        }
+stage('sonarqube test') {
+            steps {
+               withSonarQubeEnv('sonar') {
+                    withMaven(maven: 'maven'){
+                    sh 'mvn sonar:sonar'
+                   }
+                }
+            }
+        }
+         stage("Quality gate") {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+stage ("Upload Artifact") {
+            steps {
+                nexusArtifactUploader(
+                  nexusVersion: 'nexus3',
+                  protocol: 'http',
+                  nexusUrl: "${NEXUS_IP}:${NEXUS_PORT}",  
+                  groupId: 'QA',
+                  version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                  repository: "${RELEASE_REPO}",
+                  credentialsId: "${NEXUS_LOGIN}", 
+                  artifacts: [
+                    [artifactId: 'skiApp',
+                     classifier: '',
+                     file: 'target/SkiStationProject-0.0.1-SNAPSHOT.jar',
+                     type: 'jar']
+                  ]
+                )
+            }
+        }
+stage('Login') {
+            steps {
+                sh 'echo $DOCKERHUB_LOGIN_PSW | docker login -u $DOCKERHUB_LOGIN_USR --password-stdin'
+            }
+        }
+stage("Build Docker image") {
+            steps {
+                sh "docker build -t fabidi1/ski ."
+            }
+        }
+         
+
+ stage('Push in dockerhub') {
+            steps {
+               
+                sh "docker push fabidi1/ski"
+            }
+        }
+
+      
+    }
+
+post {
+            failure {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} FAILED"
+                )
+            }
+            success {
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: "${JOB_NAME}.${BUILD_NUMBER} PASSED"
+                )
+            }
+    }
+}
